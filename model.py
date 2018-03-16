@@ -85,19 +85,26 @@
 import csv
 import cv2
 import numpy as np
+import sklearn as sk
 
+DEBUG_PRINT= False
 
 IMROWS= 160
 IMCOLS= 320
 RGBDEPTH= 3
 FLATTENED_SIZE= IMROWS * IMCOLS
 
+####
+# set size of batch to be 1/BATCH_SIZE_DIV of the
+# training set and validation set
+##
+BATCH_SIZE_DIV= 50
 
 EPOCHS=5
 
 drop_prob=0.1
 
-correction= 0.2
+correction= 0.15
 
 TOP_CROP=70
 BOTTOM_CROP=10
@@ -134,12 +141,44 @@ with open('./data/driving_log_5_pct.csv') as csvfile:
    for line in reader:
      lines_big.append(line)
 
+
+#####
+# Compare the difference between the samples and the
+# top 5% steering angle samples.  Whatever this difference,
+# boost the proportion of top 5% steering angle examples by
+# oversampling their entries.
+#
+# By doing this with the CSV file, it makes it easier to create
+# the images as well as a single generator later.
+###
+
+num_lines= len(lines)
+
+if DEBUG_PRINT:
+  print("len(num_lines)= ", num_lines)
+
+num_lines_big = len(lines_big)
+
+if DEBUG_PRINT:
+  print("len(num_lines_big)= ", num_lines_big)
+
+num_samples = num_lines - num_lines_big
+
+#####
+# Randomly select 
+##
+if ((num_lines - num_lines_big) > 0):
+   num_samples= int(round((num_lines - num_lines_big)*5/7))
+
+   for i in range(num_samples):
+     sel= np.random.randint(num_lines_big)
+     line= lines_big[sel]
+     lines.append(line)
+
+
    
 images = []
-images_big = []
 measurements = []
-measurements_big= []
-
 
 augmented_images= []
 augmented_measurements= []
@@ -174,79 +213,50 @@ for line in lines:
   # did not need correction here
   ##
   measurements.append(measurement)
-  measurements.append(measurement)
-  measurements.append(measurement)
-  #measurements.append(measurement + correction)
-  #measurements.append(measurement - (correction*1.5))
+  #measurements.append(measurement)
+  #measurements.append(measurement)
+  measurements.append(measurement + correction)
+  measurements.append(measurement - (correction*1.0))
 
 
 
-  #####
-  # Load the images corresponding to the data representing
-  # the top 5% largest magnitude (positive and negative)
-  # steering angles.  These correct the vehicle to return
-  # to the center of the road from the right hand side and
-  # left hand side of the road.
-  #
-  # Add the camera images for the left, right, and
-  # center cameras
-  #
-  # index 0: center image
-  # index 1: left image
-  # index 2: right image
-  ###
-for line in lines_big:
-  for i in range(3):
-    source_path= line[i]
-    filename = source_path.split('/')[-1]
-    current_path = './data/IMG/' + filename
-    image = cv2.imread(current_path)
-    image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-    images_big.append(image)
+def generator(samples, batch_size=32):
+  num_samples= len(samples)
 
-  measurement = float(line[3])
-  # get steering measurement
-  #####
-  # append steering measurement
-  # then append synthesized steering measurement for left image
-  # finally, append synthesized steering measurment for right image
-  #
-  # Used correciton here
-  ##
-  measurements_big.append(measurement)
-  measurements_big.append(measurement + correction)
-  measurements_big.append(measurement - correction)
+  while 1:
+    sk.utils.shuffle(samples)
 
+    for offset in range(0, num_samples, batch_size):
+      batch_samples= samples[offset:offset + batch_size]
+      
+      images= []
+      measurements= []
 
-#####
-# Print out the relative sizes
-# of the training data and the segregated
-# large magnitude corrective angle data
-###
-num_images= len(images)
-num_images_big= len(images_big)
-print("num_images = ", num_images)
-print("num_images_big = ",num_images_big)
+      for batch_sample in batch_samples:
+        for i in range(3):
+          source_path= batch_sample[i]
+          filename = source_path.split('/')[-1]
+          current_path= './data/IMG/' + filename
+          image= cv2.imread(current_path)
+          image= cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+          images.append(image)
 
-#####
-# Boost the training data so that randomly selected
-# large magnitude angle corrective data has higher priors.
-##
-if (num_images > num_images_big):
-   num_samples= int(round((num_images - num_images_big)*3/5))
+        measurement= float(batch_sample[3])
+        measurements.append(measurement)
+        measurements.append(measurement + correction)
+        measurements.append(measurement - correction)
+        #measurements.append(measurement + correction)
+        #measurements.append(measurement - (correction *1.0))
+       
+      X_train= np.array(images)
+      y_train= np.array(measurements)
+   
+      if DEBUG_PRINT:
+        print("len(X_train)= ",len(X_train))
+        print("len(y_train)= ",len(y_train))
 
-for i in range(num_samples):
-   sel= np.random.randint(num_images_big)
-   img= images_big[sel];
-   meas= measurements_big[sel]
-
-   images.append(img)
-   measurements.append(meas);
-
-num_images= len(images)
-num_measurements= len(measurements)
-print("new size for num_images= ",num_images)
-print("new size for num_measurements= ",num_measurements)
+      yield sk.utils.shuffle(X_train, y_train)
+    
 
 
 #####
@@ -279,12 +289,19 @@ from keras.layers import Flatten, Dense, Activation, Dropout, Lambda
 from keras.layers.convolutional import Convolution2D, Convolution1D, Cropping2D
 from keras.layers.pooling import MaxPooling2D
 
+from sklearn.model_selection import train_test_split
+
+train_samples, validation_samples = train_test_split(lines, test_size=0.2)
+
+train_batch_size= int(round(len(train_samples)/BATCH_SIZE_DIV))
+val_batch_size= int(round(len(validation_samples)/BATCH_SIZE_DIV))
+train_generator = generator(train_samples, batch_size=train_batch_size)
+validation_generator= generator(validation_samples, batch_size=val_batch_size);
 #####
 # Pixels of image were normalized (divide by 255) and mean centered (subtract 0.5).
 # This is done in tensorflow/Keras so that it is efficient on GPU, but also means
 # any image can be put into the model thus making it more flexible.
 ##
-
 model = Sequential()
 model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape=(160,320,3)))
 model.add(Cropping2D(cropping=((TOP_CROP,BOTTOM_CROP),(LEFT_CROP,RIGHT_CROP))))
@@ -324,6 +341,7 @@ else:
   model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train,y_train, validation_split=0.2, shuffle=True, nb_epoch=EPOCHS)
+model.fit_generator(train_generator, samples_per_epoch= len(train_samples), \
+                    validation_data= validation_generator, nb_val_samples= len(validation_samples), nb_epoch=EPOCHS)
 
 model.save('model.h5')
