@@ -21,8 +21,8 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-![image1]: ./steeringAngleDist.jpg "Priors over Steering Angles"
-![image2]: ./sharpSteeringAngleDist.jpg "Priors for Top 5-percent Steering Angles"
+[image1]: ./steeringAngleDist.jpg "Priors over Steering Angles"
+[image2]: ./sharpSteeringAngleDist.jpg "Priors for Top 5-percent Steering Angles"
 
 ## High Level Description
 
@@ -200,11 +200,11 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 For a very many versions of my model, the car's behavior was such that it would drift off the side of the track. This occured in spite of inclusion of corrective/recovery actions in the data.  Upon closer observation of the trained network, I noticed that the steering angles tended to be quite small.  It dawned on me that the track is mostly straight.  When driving straight, one makes mostly subtle steering corrections.
 But when the car approached a curve, it eventually drifted off the course because the trained model was unable to predict a larger steering angle.  This piqued my curiosity and I decided to take the log file and analyze it in MATLAB.  Within MATLAB, I computed a histogram for the distribution of the steering angles.  The histogram had 20 bins.
 
-[image1]
+![Steering Angle Distribution][image1]
 
 This distribution had a mode at very small steering angle and not much probability mass for the larger postive and negative steering angles.  I needed to boost the priors associated with larger magnitude (positive/negative) steering angles.  So, in MATLAB, I produced a second version of the data log file by isolating data points whose steering angles were either less than the 5-th percentile (most negative 5%) or  whose steering angles were greater than the 05-th percentile (most positive 5%).  I produced a histogram of this segregated data set.
 
-[image2]
+![Sharp Steering Angle Distribution][image2]
 
 I then went to my model and loaded the regular data set and the big-angle data set separately. When I construct the training set, I oversample the big-angle data set in order to boost the priors for large steering angles.  This appears to have worked very well for me resulting in much better driving performance.
 
