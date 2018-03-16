@@ -225,6 +225,7 @@ training data.  From the epoch information there should have been 25764 instance
 My training epocs are as follows for trainrng loss and validation loss. This is from TensorFlow running on Amazon AWS...
 
 
+Epoch 1/5
 24720/25764 [===========================>..] - ETA: 1s - loss: 0.0418  /home/carnd/anaconda3/envs/carnd-term1/lib/python3.5/site-packages/keras/engine/training.py:1569: UserWarning: Epoch comprised more than `samples_per_epoch` samples, which might affect learning results. Set `samples_per_epoch` correctly to avoid this warning.  
   warnings.warn('Epoch comprised more than '
 
