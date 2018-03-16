@@ -21,8 +21,8 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./steeringAngleDist.jpg "Priors over Steering Angles"
-[image2]: ./sharpSteeringAngleDist.jpg "Priors for Top 5-percent Steering Angles"
+![image1]: ./steeringAngleDist.jpg "Priors over Steering Angles"
+![image2]: ./sharpSteeringAngleDist.jpg "Priors for Top 5-percent Steering Angles"
 
 ## High Level Description
 
