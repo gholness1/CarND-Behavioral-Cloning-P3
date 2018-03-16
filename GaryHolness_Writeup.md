@@ -6,6 +6,8 @@
 
 ### Note:  I only implemented autonomous driving for the easy track
 
+### Note:  This is a resubmit where my major changes consisted of (1) adding a generator, (2) increasing the boosting of corrective data priors, and (3) changing the asymmetric correction for left and right cameras to be symmetric.  The increased boosting removed the need to use turning radius to alter correction for the outside camera (further from center of turn radius).
+
 ---
 
 **Behavioral Cloning Project**
