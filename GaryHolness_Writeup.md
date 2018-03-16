@@ -227,3 +227,6 @@ As you can see, my validation loss decreases over each of 5 training EPOCS. I us
 for reasons of time and also I felt loss was small enough (2 decimal places) given the
 amount of training and validation data (its a tiny mean squared error over so many instances).
 
+Resulting autonomous driving performance video below:
+
+[![Autonomous Driving Result](http://img.youtube.com/vi/JuLyaXUIepg/0.jpg)](http://www.youtube.com/watch?v=JuLyaXUIepg)
