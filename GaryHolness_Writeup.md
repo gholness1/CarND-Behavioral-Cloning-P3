@@ -25,9 +25,9 @@ The goals / steps of this project are the following:
 
 [image1]: ./steeringAngleDist.jpg "Priors over Steering Angles"
 [image2]: ./sharpSteeringAngleDist.jpg "Priors for Top 5-percent Steering Angles"
-[image3]: ./smallSteerleft.jpg "Small Steering Angle left camera"
-[image4]: ./smallSteerctr.jpg "Small Steering Angle center camera"
-[image5]: ./smallSteerright.jpg "Small Steering Angle right camera"
+[image3]: ./regularSteerleft.jpg "Small Steering Angle left camera"
+[image4]: ./regularSteerctr.jpg "Small Steering Angle center camera"
+[image5]: ./regularSteerright.jpg "Small Steering Angle right camera"
 [image6]: ./bigSteerleft.jpg "Big Steering Angle left camera"
 [image7]: ./bigSteerctr.jpg "Big Steering Angle center camera"
 [image8]: ./bigSteerright.jpg "Big Steering Angle right camera"
