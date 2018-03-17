@@ -8,6 +8,15 @@
 
 ### Note:  This is a resubmit where my major changes consisted of (1) adding a generator, (2) increasing the boosting of corrective data priors, and (3) changing the asymmetric correction for left and right cameras to be symmetric.  The increased boosting removed the need to use turning radius to alter correction for the outside camera (further from center of turn radius).
 
+#### Files submitted
+* model.h5- my trained model
+* model.py- my code
+* video.mp4- my my test video
+* model_old.h5- my trained model from my first submissions
+* model_old.py- my code from my first submission
+* video_old.mp4- my video from my first submission
+* GaryHolness_Writeup_old.md- my writeup from my first submission
+
 ---
 
 **Behavioral Cloning Project**
