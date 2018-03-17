@@ -25,6 +25,12 @@ The goals / steps of this project are the following:
 
 [image1]: ./steeringAngleDist.jpg "Priors over Steering Angles"
 [image2]: ./sharpSteeringAngleDist.jpg "Priors for Top 5-percent Steering Angles"
+[image3]: ./smallSteerleft.jpg "Small Steering Angle left camera"
+[image4]: ./smallSteerctr.jpg "Small Steering Angle center camera"
+[image5]: ./smallSteerright.jpg "Small Steering Angle right camera"
+[image6]: ./bigSteerleft.jpg "Big Steering Angle left camera"
+[image7]: ./bigSteerctr.jpg "Big Steering Angle center camera"
+[image8]: ./bigSteerright.jpg "Big Steering Angle right camera"
 
 ## High Level Description
 
@@ -221,6 +227,18 @@ In all I had a total of 90,567 data points.  Of this, 72,453 were used for train
 
 In my revised implementation that used the generator, I set the batch size to 1/50th of the
 training data.  From the epoch information there should have been 25764 instances but the feeding if training imputs reported 26265 inputs. This I believe is due to the batch size and the generator. When I didn't use the generator, this didn't occur.
+
+Example data are presented for left, center, and right camera images associated with small steering angles.
+
+![Small Steering Angle left][image3] ![Small Steering Angle center][image4] ![Small Steering Angle right][image5]
+
+For these images, the steering angle was 0.0. The car is pointed relatively straight in the roadway.  Moreover, side-by-side across left, center, and right camera images, you can see that the car is pointed straight but closer to the left hand side of the roadway.
+
+Another example is presented for left, center, and right camera images associated with large steering angles.  
+
+![Large Steering Angle left][image6] ![Large Steering Angle center][image7] ![Large Steering Angle right][image8]
+
+For these images, the steering angle was -0.5. The car is certainly turned towards the left hand side of the screen.  From the horizontal center of each image (left, center, right) if you trace from the bottom to the top of each image, you will see a virtical path through the image appears to cut across the roadway in a direction to the left hand side of the roadway.  All of this is to say that a large negative steering angle means the car is turning to the left.
 
 My training epocs are as follows for trainrng loss and validation loss. This is from TensorFlow running on Amazon AWS...
 
